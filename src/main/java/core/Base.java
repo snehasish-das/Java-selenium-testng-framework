@@ -6,14 +6,12 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Base {
-    public Map<String, String> jsonFileToMap(String filePath) {
+    public HashMap jsonFileToMap(String filePath) {
         InputStream inputStream = null;
-        HashMap<String, String> result = null;
+        HashMap result = null;
         ClassLoader classLoader = getClass().getClassLoader();
         try {
             inputStream = classLoader.getResourceAsStream(filePath);

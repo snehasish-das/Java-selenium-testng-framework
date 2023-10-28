@@ -1,44 +1,36 @@
 package core;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.testng.ITestContext;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
 public class BaseUI extends Base{
+    private static final int MAX_WAIT_TIME = 30;
     WebDriver driver = null;
     Map<String,String> env = jsonFileToMap("config/env.conf.json");
-    /**
-     * Used to instantiate the browser and navigate to a given url
-     * @param browser
-     * @param url
-     * @return
-     */
-    public WebDriver navigateTo(String url, String... browser){
-        if(browser.length>0){
-            this.driver = this.getDriver(browser[0]);
-        }
-        else {
-            this.driver = this.getDriver(null);
-        }
-        this.driver.navigate().to(url);
-        return this.driver;
-    }
 
     /**
      * The test is requesting for a specific browser
-     * @param browser
+     * @param setBrowser
      */
-    private WebDriver getDriver(String browser){
+    protected WebDriver initDriver(String... setBrowser){
+        String browser = null;
+        if(setBrowser.length>0){
+            browser = setBrowser[0];
+        }
 
         if(System.getProperty("browser") != null){
             browser = System.getProperty("browser");
@@ -74,11 +66,51 @@ public class BaseUI extends Base{
             this.driver = new FirefoxDriver(options);
         }
         this.driver.manage().window().maximize();
+        //context.setAttribute("driver",driver); //setting the test context driver variable to the driver
         return this.driver;
     }
 
-    @AfterMethod
-    public void tearDown(ITestContext context){
-        this.driver.close();
+    protected WebDriver getDriver(){
+        return this.driver;
+    }
+
+    protected void setText(WebDriver driver, String locator, String value, String... params){
+        if(params.length>0){
+            locator = replaceParams(locator,params);
+        }
+        getElement(driver,locator).sendKeys(value);
+    }
+
+    protected void click(WebDriver driver, String locator, String... params){
+        if(params.length>0){
+            locator = replaceParams(locator,params);
+        }
+        getElement(driver,locator).click();
+    }
+
+    private WebElement getElement(WebDriver driver, String locator) {
+        WebElement element;
+        if(locator.contains("//")){
+            element = driver.findElement(By.xpath(locator));
+        }else{
+            element = driver.findElement(By.id(locator));
+        }
+        fluentWait(driver,element);
+        return element;
+    }
+
+    private String replaceParams(String locator, String[] params) {
+        for(String param : params){
+            locator = locator.replaceFirst("<<param>>", param);
+        }
+        return locator;
+    }
+
+    private void fluentWait(WebDriver driver, WebElement element){
+        FluentWait<WebDriver> wait = new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(MAX_WAIT_TIME))
+                .pollingEvery(Duration.ofSeconds(5))
+                .ignoring(NoSuchElementException.class);
+        wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 }
