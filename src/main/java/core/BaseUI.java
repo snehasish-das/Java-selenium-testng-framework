@@ -89,6 +89,7 @@ public class BaseUI extends Base{
             locator = replaceParams(locator,params);
         }
         try {
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3)); //waiting for the
             WebElement element = getElement(driver,locator);
             text = element.getText();
         }catch (Exception ex){
