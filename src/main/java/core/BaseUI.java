@@ -11,6 +11,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -79,6 +80,22 @@ public class BaseUI extends Base{
             locator = replaceParams(locator,params);
         }
         getElement(driver,locator).sendKeys(value);
+        info("Setting text "+value+" to "+locator);
+    }
+
+    protected String getText(WebDriver driver, String locator, String... params){
+        String text = null;
+        if(params.length>0){
+            locator = replaceParams(locator,params);
+        }
+        try {
+            WebElement element = getElement(driver,locator);
+            text = element.getText();
+        }catch (Exception ex){
+            info("Element not found for getText()");
+        }
+        info("Extracted text "+text+" from "+locator);
+        return text;
     }
 
     protected void click(WebDriver driver, String locator, String... params){
@@ -86,16 +103,16 @@ public class BaseUI extends Base{
             locator = replaceParams(locator,params);
         }
         getElement(driver,locator).click();
+        info("clicking on "+locator);
     }
 
-    private WebElement getElement(WebDriver driver, String locator) {
+    protected WebElement getElement(WebDriver driver, String locator) {
         WebElement element;
         if(locator.contains("//")){
-            element = driver.findElement(By.xpath(locator));
+            element = (WebElement) fluentWait(driver).until(ExpectedConditions.visibilityOfElementLocated(By.xpath(locator)));
         }else{
-            element = driver.findElement(By.id(locator));
+            element = (WebElement) fluentWait(driver).until(ExpectedConditions.visibilityOfElementLocated(By.id(locator)));
         }
-        fluentWait(driver,element);
         return element;
     }
 
@@ -106,11 +123,11 @@ public class BaseUI extends Base{
         return locator;
     }
 
-    private void fluentWait(WebDriver driver, WebElement element){
+    private Wait fluentWait(WebDriver driver){
         FluentWait<WebDriver> wait = new FluentWait<>(driver)
                 .withTimeout(Duration.ofSeconds(MAX_WAIT_TIME))
                 .pollingEvery(Duration.ofSeconds(5))
                 .ignoring(NoSuchElementException.class);
-        wait.until(ExpectedConditions.elementToBeClickable(element));
+        return wait;
     }
 }

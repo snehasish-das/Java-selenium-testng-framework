@@ -26,15 +26,15 @@ public class Base {
     }
 
     public void info(String msg){
-        LoggerFactory.getLogger(this.getClass().getName()).info(getCurrentDateTime()+":"+msg);
+        LoggerFactory.getLogger(this.getClass().getSimpleName()).info(getCurrentDateTime()+":"+msg);
     }
 
     public void warn(String msg){
-        LoggerFactory.getLogger(this.getClass().getName()).warn(getCurrentDateTime()+":"+msg);
+        LoggerFactory.getLogger(this.getClass().getSimpleName()).warn(getCurrentDateTime()+":"+msg);
     }
 
     public void debug(String msg){
-        LoggerFactory.getLogger(this.getClass().getName()).debug(getCurrentDateTime()+":"+msg);
+        LoggerFactory.getLogger(this.getClass().getSimpleName()).debug(getCurrentDateTime()+":"+msg);
     }
 
     /**

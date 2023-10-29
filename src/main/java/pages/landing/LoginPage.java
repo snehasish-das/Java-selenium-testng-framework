@@ -2,6 +2,7 @@ package pages.landing;
 
 import core.BaseUI;
 import org.openqa.selenium.WebDriver;
+import pages.inventory.InventoryPage;
 
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public class LoginPage<T> extends BaseUI {
         this.originPage = originPage;
     }
 
-    public LoginPage<T> login(WebDriver driver, String userkey){
+    public InventoryPage<T> login(WebDriver driver, String userkey){
         Map userCreds = jsonFileToMap("config/users.conf.json");
         Map<String,String> userDetails = (Map) userCreds.get(userkey);
         String username = userDetails.get("username");
@@ -24,7 +25,7 @@ public class LoginPage<T> extends BaseUI {
         setText(driver, locatorMap.get("passwordInput").toString(), password);
         click(driver, locatorMap.get("loginButton").toString());
 
-        return this;
+        return (InventoryPage<T>) new InventoryPage<>(driver,this);
     }
 
 }

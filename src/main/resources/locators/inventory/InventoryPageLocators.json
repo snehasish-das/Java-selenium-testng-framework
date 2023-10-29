@@ -1,0 +1,10 @@
+{
+  "productTitles": "//div[contains(@class,'inventory_item_name')]",
+  "productPrices": "//div[contains(@class,'inventory_item_price')]",
+  "productTitle" : "//div[contains(@class,'inventory_item_name') and contains(text(),'<<param>>')]",
+  "productButton" : "//div[contains(@class,'inventory_item_name') and contains(text(),'<<param>>')]/parent::a/parent::div/following-sibling::div/button",
+  "productPrice" : "//div[contains(@class,'inventory_item_name') and contains(text(),'<<param>>')]/parent::a/parent::div/following-sibling::div/div",
+  "productSortSelect" : "//select[contains(@class,'product_sort_container')]",
+  "shoppingCart" : "//a[contains(@class,'shopping_cart_link')]",
+  "shoppingCartItems" : "//a[contains(@class,'shopping_cart_link')]/span"
+}
